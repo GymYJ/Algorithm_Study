@@ -1,23 +1,29 @@
-def main():
-    n, m = list(map(int, input().split()))
-    days = [True for _ in range(n + 1)]
-    if m:
-        for i in list(map(int, input().split())):
-            days[i] = False
-    dp = [0 for _ in range(n + 1)]
-    dp[1] = 10000 if days[1] else 0
-    if n > 1:
-        dp[2] = dp[1] + 10000 if days[2] else dp[1]
-    if n > 2:
-        dp[3] = min(dp[2] + 10000, 25000)
-    coupon = 0
-    for i in range(4, n + 1):
-        if days[i]:
-            dp[i] = min(dp[i-1] + 10000, dp[i-3] + 25000, dp[i - 4] + 37000, dp[i - 5] + 37000)
-        else:
-            dp[i] = dp[i - 1]
-    print(dp)
+import sys
+from math import inf
+
+n, m = list(map(int, sys.stdin.readline().split()))
+days = [True for _ in range(n + 1)]
+if m:
+    for i in list(map(int, sys.stdin.readline().split())):
+        days[i] = False
+dp = [[inf for _ in range(n + 1)] for _ in range(n + 1)]
 
 
-if __name__ == '__main__':
-    main()
+def dfs(day, coupon):
+    global dp
+    global n
+    if day > n:
+        return 0
+    if dp[coupon][day] != inf:
+        return dp[coupon][day]
+    if not days[day]:
+        dp[coupon][day] = dfs(day + 1, coupon)
+    else:
+        dp[coupon][day] = min(dp[coupon][day], dfs(day + 1, coupon) + 10000,
+                              dfs(day + 3, coupon + 1) + 25000, dfs(day + 5, coupon + 2) + 37000)
+        if coupon >= 3:
+            dp[coupon][day] = min(dp[coupon][day], dfs(day + 1, coupon - 3))
+    return dp[coupon][day]
+
+
+print(dfs(1, 0))
