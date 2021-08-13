@@ -1,22 +1,13 @@
-from math import sqrt, floor
+import sys
+from math import sqrt
 
-
-def main():
-    n = int(input())
-    dp = [0 for _ in range(n + 2)]
-    dp[1] = 1
-    dp[2] = 1
-    dp[3] = 1
-    for i in range(4, n + 2):
-        num = i
-        temp = sqrt(num)
-        if int(temp) == temp:
-            dp[i] = 1
-        else:
-            j = floor(temp)
-            dp[i] = min([dp[num - (j - i) ** 2] for i in range(j // 3, j)]) + 1
-    print(dp[n])
-
-
-if __name__ == '__main__':
-    main()
+n = int(sys.stdin.readline())
+dp = [5 for _ in range(n + 1)]
+for i in range(1, int(sqrt(n)) + 1):
+    num = i ** 2
+    dp[num] = 1
+    for j in range(num + 1, num * 4 + 1):
+        if j > n:
+            break
+        dp[j] = min(dp[j], dp[j - num] + 1)
+print(dp[n])
