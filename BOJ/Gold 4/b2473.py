@@ -1,35 +1,27 @@
 import sys
-from itertools import combinations
+input = sys.stdin.readline
 
-n = int(sys.stdin.readline())
-n_list = [i for i in range(n)]
-arr = list(map(int, sys.stdin.readline().split()))
-arr.sort()
-answer = []
-ans_value = sys.maxsize
-for c in combinations(n_list, 2):
-    temp = list(c)
-    value = arr[temp[0]] + arr[temp[1]]
-    low = 0
-    high = n - 1
-    index = 0
-    find = False
-    while low <= high:
-        mid = (low + high) // 2
-        t_value = arr[mid] + value
-        if t_value < 0:
-            low = mid + 1
+n = int(input())
+lst = sorted(list(map(int, input().split())))
+
+res = 4000000000 #임의의 max값
+sol_candi = []
+
+for i in range(n-2):
+    refer = lst[i]
+    l_p = i+1 #왼쪽 포인터
+    r_p = n-1 #오른쪽 포인터
+    while l_p < r_p:
+        cur_sum = refer + lst[l_p] + lst[r_p]
+        if abs(cur_sum) <= abs(res): #기준값보다 작으면
+            sol_candi = [refer, lst[l_p], lst[r_p]] #세 용액 업데이트
+            res = refer + lst[l_p] + lst[r_p] #결과값 업데이트
+        if cur_sum < 0:
+            l_p += 1
+        elif cur_sum > 0:
+            r_p -= 1
         else:
-            high = mid - 1
-        if abs(t_value) < ans_value and mid not in temp:
-            ans_value = abs(t_value)
-            index = mid
-            find = True
-    if find:
-        temp.append(index)
-        answer = temp
-    if ans_value == 0:
-        break
-answer.sort()
-answer = [arr[i] for i in answer]
-print(' '.join(list(map(str, answer))))
+            print(*sol_candi)
+            sys.exit()
+
+print(*sol_candi)
